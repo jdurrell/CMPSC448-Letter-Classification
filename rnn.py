@@ -20,18 +20,22 @@ test_labels = tf.keras.utils.to_categorical(test_labels, num_classes=num_classes
 
 # Build a more complex RNN model
 model = models.Sequential()
-model.add(layers.SimpleRNN(256, input_shape=(train_images.shape[1], 1), return_sequences=True))
-model.add(layers.SimpleRNN(128))
+model.add(layers.LSTM(64, input_shape=(train_images.shape[1], 1), return_sequences=True))
+model.add(layers.BatchNormalization())
+model.add(layers.LSTM(32))
+model.add(layers.BatchNormalization())
 model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(num_classes, activation='softmax'))
 
 # Compile the model
-model.compile(optimizer='adam',
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+model.compile(optimizer=optimizer,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 # Train the model with more epochs
-model.fit(train_images, train_labels, epochs=20, batch_size=64, validation_split=0.2)
+early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+model.fit(train_images, train_labels, epochs=20, batch_size=128, validation_split=0.2, callbacks=[early_stopping])
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(test_images, test_labels)
