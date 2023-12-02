@@ -35,7 +35,7 @@ model.compile(optimizer=optimizer,
 
 # Train the model with more epochs
 early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
-model.fit(train_images, train_labels, epochs=20, batch_size=128, validation_split=0.2, callbacks=[early_stopping])
+model.fit(train_images, train_labels, epochs=20, batch_size=64, validation_split=0.2, callbacks=[early_stopping])
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(test_images, test_labels)
